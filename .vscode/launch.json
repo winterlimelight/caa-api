@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "C#: [swagger]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/FlightInformationApi/FlightInformationApi.csproj",
+            "launchConfigurationId": "TargetFramework=;swagger"
+        },
+        {
+            "name": "C#: [api]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/FlightInformationApi/FlightInformationApi.csproj",
+            "launchConfigurationId": "TargetFramework=;api"
+        }
+    ]
+}
