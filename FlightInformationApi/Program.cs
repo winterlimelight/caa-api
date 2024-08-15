@@ -1,5 +1,7 @@
+using System;
 using FlightInformationApi.Commands;
 using FlightInformationApi.Data;
+using FlightInformationApi.Queries;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,7 +22,10 @@ public class Program
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(opts =>
+        {
+            opts.IncludeXmlComments(System.Reflection.Assembly.GetExecutingAssembly());
+        });
 
         ConfigureDatabase(builder);
         DependencyInjection(builder);
@@ -31,9 +36,7 @@ public class Program
         {
             var db = serviceScope.ServiceProvider.GetRequiredService<WriteContext>();
             db.Database.EnsureCreated();
-            
-            // TODO initial db population
-            db.Airports.Add(new Airport { AirportID = 1, Code = "NZAA", Name = "Auckland International Airport" });
+            PopulateDatabase(db);
             db.SaveChanges();
         }
 
@@ -66,6 +69,20 @@ public class Program
     {
         builder.Services.AddScoped<ICommandHandler<SetFlightCommand, IdCommandResponse>, SetFlightCommandHandler>();
 
+        builder.Services.AddScoped<IFlightQueries, FlightQueries>();
+
         builder.Services.AddTransient<IModelValidator, ModelValidator>();
+    }
+
+    private static void PopulateDatabase(WriteContext db)
+    {
+        db.Airports.Add(new Airport { AirportID = 1, Code = "NZAA", Name = "Auckland" });
+        db.Airports.Add(new Airport { AirportID = 2, Code = "NZCH", Name = "Christchurch" });
+        db.Airports.Add(new Airport { AirportID = 3, Code = "NZDN", Name = "Dunedin" });
+        db.Airports.Add(new Airport { AirportID = 4, Code = "NZHN", Name = "Hamilton" });
+        db.Airports.Add(new Airport { AirportID = 5, Code = "NZOH", Name = "Ohakea (MIL)" });
+        db.Airports.Add(new Airport { AirportID = 6, Code = "NZPM", Name = "Palmerston North" });
+        db.Airports.Add(new Airport { AirportID = 7, Code = "NZQN", Name = "Queenstown" });
+        db.Airports.Add(new Airport { AirportID = 8, Code = "NZWN", Name = "Wellington" });
     }
 }

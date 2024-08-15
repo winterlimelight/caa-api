@@ -8,7 +8,6 @@ public class Airport
     public int AirportID {get;set;}
 
     /// <summary>Departure airport ICAO identifier</summary>
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [MaxLength(4)]
     public string Code { get; set; }
 

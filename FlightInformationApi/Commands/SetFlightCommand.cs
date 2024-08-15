@@ -32,6 +32,6 @@ public class SetFlightCommand
     /// <summary>Status of the flight</summary>
     public FlightStatus Status { get; set; }
 
-    ///<summary>Field used to detect concurrent changes</summary>
+    ///<summary>Field used to detect concurrent changes. Not required when creating flight.</summary>
     public Guid Version { get; set; }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using FlightInformationApi.Commands;
+using FlightInformationApi.Queries;
 
 
 namespace FlightInformationApi.Controllers;
@@ -16,10 +17,12 @@ namespace FlightInformationApi.Controllers;
 public class FlightInformationController : ControllerBase
 {
     private readonly ILogger<FlightInformationController> _logger;
+    private readonly IFlightQueries _flightQueries;
 
-    public FlightInformationController(ILogger<FlightInformationController> logger)
+    public FlightInformationController(ILogger<FlightInformationController> logger, IFlightQueries flightQueries)
     {
         _logger = logger;
+        _flightQueries = flightQueries;
     }
 
     // [HttpGet]
@@ -28,12 +31,17 @@ public class FlightInformationController : ControllerBase
     //     throw new NotImplementedException();
     // }
 
+    /// <summary>Get flight by ID</summary>
     [HttpGet("{flightID}")]
+    [ProducesResponseType(typeof(FlightResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetFlight(int flightID)
     {
-        throw new NotImplementedException();
+        FlightResponse flight = await _flightQueries.GetFlight(flightID);
+        return flight != null ? Ok(flight) : NotFound();
     }
 
+    /// <summary>Create new flight</summary>
     [HttpPost]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -59,6 +67,7 @@ public class FlightInformationController : ControllerBase
         }
     }
 
+    /// <summary>Update existing flight</summary>
     [HttpPut("{flightID}")]
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -90,5 +99,6 @@ public class FlightInformationController : ControllerBase
         }
     }
 
-    // TODO DELETE, Get /search
+    // TODO DELETE (id in url + version as query param), 
+    // TODO Get /search
 }

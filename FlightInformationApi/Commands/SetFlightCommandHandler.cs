@@ -31,9 +31,9 @@ public class SetFlightCommandHandler : ICommandHandler<SetFlightCommand, IdComma
         var airports = await _db.Airports.Where(a => a.Code == request.ArrivalAirport || a.Code == request.DepartureAirport).ToListAsync();
 
         if (!airports.Any(a => a.Code == request.ArrivalAirport))
-            throw new FlightInformationException($"Airport with code {request.ArrivalAirport} not found");
+            throw new FlightInformationException($"Airport with code {request.ArrivalAirport} not found.");
         if (!airports.Any(a => a.Code == request.DepartureAirport))
-            throw new FlightInformationException($"Airport with code {request.DepartureAirport} not found");
+            throw new FlightInformationException($"Airport with code {request.DepartureAirport} not found.");
 
         var flight = await _db.Flights.FirstOrDefaultAsync(f => f.FlightID == request.FlightID);
         if (request.FlightID == 0) // new flight
