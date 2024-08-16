@@ -38,9 +38,6 @@ public class SetFlightCommandHandler : ICommandHandler<SetFlightCommand, IdComma
         var flight = await _db.Flights.FirstOrDefaultAsync(f => f.FlightID == request.FlightID);
         if (request.FlightID == 0) // new flight
         {
-            if (flight != null)
-                throw new AlreadyExistsException();
-
             // create flight
             flight = new Flight
             {

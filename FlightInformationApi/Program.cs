@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using FlightInformationApi.Commands;
 using FlightInformationApi.Data;
 using FlightInformationApi.Queries;
@@ -11,20 +12,24 @@ using Microsoft.Extensions.Hosting;
 namespace FlightInformationApi;
 
 
-public class Program
+public partial class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddControllers();
+        IMvcBuilder mvcBuilder = builder.Services.AddControllers();
+        mvcBuilder.AddJsonOptions(opts => {
+            opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(opts =>
         {
             opts.IncludeXmlComments(System.Reflection.Assembly.GetExecutingAssembly());
+            opts.UseInlineDefinitionsForEnums();
         });
 
         ConfigureDatabase(builder);

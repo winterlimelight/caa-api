@@ -1,4 +1,5 @@
-using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +14,7 @@ using FlightInformationApi.Queries;
 namespace FlightInformationApi.Controllers;
 
 [ApiController]
-[Route("flights")]
+[Route("api/flights")]
 public class FlightInformationController : ControllerBase
 {
     private readonly ILogger<FlightInformationController> _logger;
@@ -25,11 +26,15 @@ public class FlightInformationController : ControllerBase
         _flightQueries = flightQueries;
     }
 
-    // [HttpGet]
-    // public IEnumerable<> GetAll()
-    // {
-    //     throw new NotImplementedException();
-    // }
+    /// <summary>Get all flights</summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<FlightResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> GetAll()
+    {
+        // in a practical app, some kind of paging would be needed for this.
+        return Ok(await _flightQueries.GetAllFlights());
+    }
 
     /// <summary>Get flight by ID</summary>
     [HttpGet("{flightID}")]
@@ -49,20 +54,18 @@ public class FlightInformationController : ControllerBase
     public async Task<ActionResult<IdCommandResponse>> CreateFlight([FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
     {
         request.FlightID = 0; // new flight request
-        // TODO _logger.LogTrace(); serialized representation of request obj
+        _logger.LogTrace("CreateFlight() request=" + JsonSerializer.Serialize(request));
+
         try
         {
             var result = await handler.Execute(request);
+            _logger.LogTrace("CreateFlight() result=" + JsonSerializer.Serialize(result));
+
             return CreatedAtAction(nameof(GetFlight), new {flightID = result.ID}, result);
-        }
-        catch (AlreadyExistsException)
-        {
-            // TODO logging
-            return BadRequest($"Flight {request.FlightID} already exists");
         }
         catch(FlightInformationException ex)
         {
-            // TODO logging
+            _logger.LogInformation($"CreateFlight() FlightInformationException {ex.PublicMessage}");
             return BadRequest(ex.PublicMessage);
         }
     }
@@ -76,25 +79,27 @@ public class FlightInformationController : ControllerBase
     public async Task<ActionResult<IdCommandResponse>> UpdateFlight(int flightID, [FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
     {
         request.FlightID = flightID;
-        // TODO _logger.LogTrace(); serialized representation of request obj
+        _logger.LogTrace("UpdateFlight() request=" + JsonSerializer.Serialize(request));
+
         try
         {
             var result = await handler.Execute(request);
+            _logger.LogTrace("UpdateFlight() result=" + JsonSerializer.Serialize(result));
+
             return Ok();
         }
         catch (NotFoundException)
         {
-            // TODO logging
             return NotFound();
         }
         catch (ModifiedException)
         {
-            // TODO logging
+            _logger.LogInformation($"UpdateFlight() ModifiedException FlightID={request.FlightID}");
             return BadRequest($"Flight {request.FlightID} has been modified by another user");
         }
         catch(FlightInformationException ex)
         {
-            // TODO logging
+            _logger.LogInformation($"UpdateFlight() FlightInformationException {ex.PublicMessage}");
             return BadRequest(ex.PublicMessage);
         }
     }

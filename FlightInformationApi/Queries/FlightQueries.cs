@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -9,10 +10,11 @@ namespace FlightInformationApi.Queries;
 
 public interface IFlightQueries
 {
+    /// <summary>Get all flights</summary>
+    Task<List<FlightResponse>> GetAllFlights();
     /// <summary>Get a specific flight by its database ID</summary>
     Task<FlightResponse> GetFlight(int flightID);
 
-    // TODO GetAllFlights()
     // TODO FindFlight(FlightSearchOptions options)
 }
 
@@ -22,6 +24,11 @@ public class FlightQueries : IFlightQueries
     public FlightQueries(ReadContext db)
     {
         _db = db;
+    }
+
+    public async Task<List<FlightResponse>> GetAllFlights()
+    {
+        return await _db.Flights.Select(MapFromFlight).ToListAsync();
     }
 
     public async Task<FlightResponse> GetFlight(int flightID)
@@ -44,20 +51,4 @@ public class FlightQueries : IFlightQueries
             Status = flight.Status,
             Version = flight.Version
         };
-
-    private static FlightResponse MapFromFlight2(Flight flight)
-    {
-        return new FlightResponse
-        {
-            FlightID = flight.FlightID,
-            FlightNumber = flight.FlightNumber,
-            Airline = flight.Airline,
-            DepartureAirport = flight.DepartureAirport.Code,
-            ArrivalAirport = flight.ArrivalAirport.Code,
-            DepartureTime = flight.DepartureTime,
-            ArrivalTime = flight.ArrivalTime,
-            Status = flight.Status,
-            Version = flight.Version
-        };
-    }
 }

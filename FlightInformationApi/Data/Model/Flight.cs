@@ -5,7 +5,16 @@ namespace FlightInformationApi.Data;
 
 public enum FlightStatus
 {
-    Scheduled = 1, Delayed, Cancelled, InAir, Landed
+    /// <summary>Flight is scheduled</summary>
+    Scheduled = 1, 
+    /// <summary>Flight is delayed</summary>
+    Delayed, 
+    /// <summary>Flight was cancelled</summary>
+    Cancelled, 
+    /// <summary>Flight is enroute</summary>
+    InAir, 
+    /// <summary>Flight has landed</summary>
+    Landed
 }
 
 public class Flight

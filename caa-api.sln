@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightInformationApi.Test", "FlightInformationApi.Test\FlightInformationApi.Test.csproj", "{B13634A4-E365-4F32-9743-E1D8E5CF053A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightInformationApi.Test", "FlightInformationApi.Tests\FlightInformationApi.Tests.csproj", "{B13634A4-E365-4F32-9743-E1D8E5CF053A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlightInformationApi", "FlightInformationApi\FlightInformationApi.csproj", "{10060A44-C9E5-467E-84A0-76D9AC408DCD}"
 EndProject
