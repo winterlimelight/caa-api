@@ -71,8 +71,8 @@ public class SetFlightCommandHandler : ICommandHandler<SetFlightCommand, IdComma
             flight.Version = Guid.NewGuid();
         }
 
-        // Given the use of flight-numbers as IDs, there is a need for concurrency checking here i.e. to validate that
-        // the flight number wasn't entered or flight change since we fetched. I've typically depended on SQL Server to 
+        // Given the use of integers as IDs, there is a need for concurrency checking here i.e. to validate that
+        // the flight ID wasn't entered or flight change since we fetched. I've typically depended on SQL Server to 
         // return an appropriate error message which would be handled here. Doing this with SqLite is beyond the scope 
         // of time I'm intending to spend, but I do note the need. Usually, I would also use auto-generated IDs from the 
         // database, or GUIDs which are statistically safe.

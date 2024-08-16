@@ -12,7 +12,7 @@ public class SetFlightCommand
     /// <summary>Airline flight number</summary>
     /// <remarks>ICAO indicates "Flight Identification now stipulates: not exceeding 7 alphanumeric characters" (https://www.icao.int/APAC/Meetings/2011_FPL_AM_TF4_Seminar/WP13.pdf)</remarks>
     /// <example>ANZ680</example>
-    [Required]
+    [RequiresValue]
     [RegularExpression(@"^[a-zA-Z0-9]{1,7}$", ErrorMessage = "Value must be 1 to 7 alphanumeric characters")]
     public string FlightNumber { get; set; }
 
@@ -22,24 +22,24 @@ public class SetFlightCommand
 
     /// <summary>Departure airport ICAO identifier</summary>
     /// <example>NZWN</example>
-    [Required]
+    [RequiresValue]
     [StringLength(4, MinimumLength = 4, ErrorMessage = "Value must be 4 character ICAO airport identifier")]
     public string DepartureAirport { get; set; }
 
     /// <summary>Arrival airport ICAO identifier</summary>
     /// <example>NZAA</example>
-    [Required]
+    [RequiresValue]
     [StringLength(4, MinimumLength = 4, ErrorMessage = "Value must be 4 character ICAO airport identifier")]
     public string ArrivalAirport { get; set; }
 
     /// <summary>UTC departure time</summary>
     /// <example>2024-08-15T20:20:00Z</example>
-    [Required]
+    [RequiresValue]
     public DateTimeOffset DepartureTime { get; set; }
 
     /// <summary>UTC arrival time</summary>
     /// <example>2024-08-15T21:25:00Z</example>
-    [Required]
+    [RequiresValue]
     public DateTimeOffset ArrivalTime { get; set; }
 
     /// <summary>Status of the flight</summary>

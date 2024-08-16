@@ -76,8 +76,12 @@ public class FlightInformationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<IdCommandResponse>> UpdateFlight(int flightID, [FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
     {
+        if(flightID <= 0)
+            return NotFound();
+
         request.FlightID = flightID;
         _logger.LogTrace("UpdateFlight() request=" + JsonSerializer.Serialize(request));
 
@@ -85,7 +89,6 @@ public class FlightInformationController : ControllerBase
         {
             var result = await handler.Execute(request);
             _logger.LogTrace("UpdateFlight() result=" + JsonSerializer.Serialize(result));
-
             return Ok();
         }
         catch (NotFoundException)
@@ -95,7 +98,7 @@ public class FlightInformationController : ControllerBase
         catch (ModifiedException)
         {
             _logger.LogInformation($"UpdateFlight() ModifiedException FlightID={request.FlightID}");
-            return BadRequest($"Flight {request.FlightID} has been modified by another user");
+            return Conflict();
         }
         catch(FlightInformationException ex)
         {

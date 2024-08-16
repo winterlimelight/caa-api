@@ -6,9 +6,7 @@ The instructions assume that you
 
 ### To run tests
 1. `cd FlightInformationApi.Test`
-
-TODO dotnet test ?...
-TODO coverage if poss?
+2. `dotnet test`
 
 
 ### To directly run the API
