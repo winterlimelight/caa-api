@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using FlightInformationApi.Commands;
 using FlightInformationApi.Queries;
+using FlightInformationApi.Data;
 
 
 namespace FlightInformationApi.Controllers;
@@ -143,5 +144,26 @@ public class FlightInformationController : ControllerBase
         }
     }
 
-    // TODO Get /search
+    /// <summary>Search for flights</summary>
+    /// <param name="airline">Airline to search for</param>
+    /// <param name="airport">Airport to search for (by name or ICAO code)</param>
+    /// <param name="fromDate">Limit flights to those departing after this date</param>
+    /// <param name="toDate">Limit flights to those arriving before this date</param>
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(FlightResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult> SearchFlights(
+        [FromQuery] string airline,
+        [FromQuery] string airport,
+        [FromQuery] DateTimeOffset? fromDate,
+        [FromQuery] DateTimeOffset? toDate
+    )
+    {
+        // in a practical app, some kind of paging would be needed for this.
+        return Ok(await _flightQueries.SearchFlights(new FlightSearchOptions {
+            Airline = airline,
+            Airport = airport,
+            FromDate = fromDate,
+            ToDate = toDate
+        }));
+    }
 }

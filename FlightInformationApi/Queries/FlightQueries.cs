@@ -14,8 +14,8 @@ public interface IFlightQueries
     Task<List<FlightResponse>> GetAllFlights();
     /// <summary>Get a specific flight by its database ID</summary>
     Task<FlightResponse> GetFlight(int flightID);
-
-    // TODO FindFlight(FlightSearchOptions options)
+    /// <summary>Search </summary>
+    Task<List<FlightResponse>> SearchFlights(FlightSearchOptions options);
 }
 
 public class FlightQueries : IFlightQueries
@@ -39,8 +39,40 @@ public class FlightQueries : IFlightQueries
             .FirstOrDefaultAsync();
     }
 
+    public async Task<List<FlightResponse>> SearchFlights(FlightSearchOptions options)
+    {
+        var results = new List<FlightResponse>();
+
+        IQueryable<Flight> query = _db.Flights;
+
+        if (!string.IsNullOrWhiteSpace(options.Airline))
+            query = query.Where(f => f.Airline == options.Airline);
+
+        if (!string.IsNullOrWhiteSpace(options.Airport))
+            query = query.Where(f => f.DepartureAirport.Name.Contains(options.Airport)
+                || f.ArrivalAirport.Name.Contains(options.Airport)
+                || f.DepartureAirport.Code == options.Airport
+                || f.ArrivalAirport.Code == options.Airport);
+
+        results = await query.Select(MapFromFlight).ToListAsync();
+
+        // SQLite does not support ordering of DateTimeOffset fields: https://learn.microsoft.com/en-us/ef/core/providers/sqlite/limitations#query-limitations
+        // Had I known this earlier I'd have used DateTime instead and ensured they are UTC. However, given this is a 
+        // demonstration only I will revert to using a client side filter. Obviously this wouldn't be ideal in production
+        // as it means many results being returned unecessarily from the database.
+
+        if(options.FromDate.HasValue)
+            results = results.Where(f => f.DepartureTime > options.FromDate.Value).ToList();
+
+        if(options.ToDate.HasValue)
+            results = results.Where(f => f.ArrivalTime < options.ToDate.Value).ToList();
+
+        return results;
+    }
+
     private Expression<Func<Flight, FlightResponse>> MapFromFlight = (Flight flight) =>
-        new FlightResponse {
+        new FlightResponse
+        {
             FlightID = flight.FlightID,
             FlightNumber = flight.FlightNumber,
             Airline = flight.Airline,
