@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -19,5 +20,9 @@ public static class TestHelpers
         return JsonSerializer.Deserialize<T>(rawBody, opts);
     }
 
-
+    public static HttpContent ToJsonBody(object obj)
+    {
+        string json = JsonSerializer.Serialize(obj);
+        return new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+    }
 }

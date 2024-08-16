@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 using FlightInformationApi.Commands;
 using FlightInformationApi.Data;
@@ -42,7 +43,6 @@ public partial class Program
             var db = serviceScope.ServiceProvider.GetRequiredService<WriteContext>();
             db.Database.EnsureCreated();
             PopulateDatabase(db);
-            db.SaveChanges();
         }
 
         // Configure the HTTP request pipeline.
@@ -81,6 +81,10 @@ public partial class Program
 
     private static void PopulateDatabase(WriteContext db)
     {
+        var anyAirport = db.Airports.FirstOrDefault();
+        if(anyAirport != null)
+            return; // already populated
+
         db.Airports.Add(new Airport { AirportID = 1, Code = "NZAA", Name = "Auckland" });
         db.Airports.Add(new Airport { AirportID = 2, Code = "NZCH", Name = "Christchurch" });
         db.Airports.Add(new Airport { AirportID = 3, Code = "NZDN", Name = "Dunedin" });
@@ -89,5 +93,7 @@ public partial class Program
         db.Airports.Add(new Airport { AirportID = 6, Code = "NZPM", Name = "Palmerston North" });
         db.Airports.Add(new Airport { AirportID = 7, Code = "NZQN", Name = "Queenstown" });
         db.Airports.Add(new Airport { AirportID = 8, Code = "NZWN", Name = "Wellington" });
+
+        db.SaveChanges();
     }
 }

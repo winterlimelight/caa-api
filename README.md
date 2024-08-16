@@ -36,6 +36,6 @@ Sample POST object:
   "arrivalAirport": "NZAA",
   "departureTime": "2024-08-15T20:20:00Z",
   "arrivalTime": "2024-08-15T21:25:00Z",
-  "status": 4
+  "status": "InAir"
 }
 ```

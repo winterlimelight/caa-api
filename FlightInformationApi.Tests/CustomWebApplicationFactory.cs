@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 /// <remarks>see https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0</remarks>
 public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
 {
+    private Guid _executionID = Guid.NewGuid();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
@@ -26,13 +28,24 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
             {
                 // If two or more distinct but shareable in-memory databases are needed in a single process, 
                 // then the mode=memory query parameter can be used - https://www.sqlite.org/inmemorydb.html
-                var connection = new SqliteConnection($"DataSource=file:{Guid.NewGuid()}?mode=memory&cache=shared");                
+                var connection = new SqliteConnection($"DataSource=file:{_executionID}?mode=memory&cache=shared");                
                 connection.Open();
                 return connection;
             });
 
-            services.AddDbContext<WriteContext>((container, options) => options.UseSqlite(container.GetRequiredService<DbConnection>()));
-            services.AddDbContext<ReadContext>((container, options) => options.UseSqlite(container.GetRequiredService<DbConnection>()));
+            //services.AddDbContext<WriteContext>((container, options) => options.UseSqlite(container.GetRequiredService<DbConnection>()));
+            //services.AddDbContext<ReadContext>((container, options) => options.UseSqlite(container.GetRequiredService<DbConnection>()));
+
+            services.AddDbContext<WriteContext>((container, options) =>
+            {
+                var connection = container.GetRequiredService<DbConnection>();
+                options.UseSqlite(connection);
+            });
+            services.AddDbContext<ReadContext>((container, options) =>
+            {
+                var connection = container.GetRequiredService<DbConnection>();
+                options.UseSqlite(connection);
+            });
         });
 
         builder.UseEnvironment("Development");
