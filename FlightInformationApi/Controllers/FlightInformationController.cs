@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -107,6 +108,40 @@ public class FlightInformationController : ControllerBase
         }
     }
 
-    // TODO DELETE (id in url + version as query param), 
+
+    // <summary>Delete existing flight</summary>
+    [HttpDelete("{flightID}")]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<IdCommandResponse>> DeleteFlight(int flightID, [FromQuery] Guid version, [FromServices] ICommandHandler<DeleteFlightCommand, EmptyCommandResponse> handler)
+    {
+        var request = new DeleteFlightCommand { FlightID = flightID, Version = version };
+        _logger.LogTrace("DeleteFlight() request=" + JsonSerializer.Serialize(request));
+
+        try
+        {
+            var result = await handler.Execute(request);
+            _logger.LogTrace("DeleteFlight() succeeded");
+            return Ok();
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+        catch (ModifiedException)
+        {
+            _logger.LogInformation($"DeleteFlight() ModifiedException FlightID={request.FlightID}");
+            return Conflict();
+        }
+        catch(FlightInformationException ex)
+        {
+            _logger.LogInformation($"DeleteFlight() FlightInformationException {ex.PublicMessage}");
+            return BadRequest(ex.PublicMessage);
+        }
+    }
+
     // TODO Get /search
 }

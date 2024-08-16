@@ -66,13 +66,18 @@ public class FlightInformationControllerScenarioTests : IDisposable
         // fetch all flights
         response = await client.GetAsync("/api/flights");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var allFlights = await TestHelpers.ReadBody<FlightResponse[]>(response);
-        Assert.Equal("ANZ179M", allFlights.Single().FlightNumber);
-        Assert.Equal(FlightStatus.Landed, allFlights.Single().Status);
+        var fetchedFlight = (await TestHelpers.ReadBody<FlightResponse[]>(response)).Single();
+        Assert.Equal("ANZ179M", fetchedFlight.FlightNumber);
+        Assert.Equal(FlightStatus.Landed, fetchedFlight.Status);
 
-        // TODO delete the flight
+        // delete the flight
+        response = await client.DeleteAsync($"/api/flights/{fetchedFlight.FlightID}?version={fetchedFlight.Version}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-
+        // verify no flights remaining
+        response = await client.GetAsync("/api/flights");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Empty(await TestHelpers.ReadBody<FlightResponse[]>(response));
     }
 
     [Fact]
@@ -119,6 +124,10 @@ public class FlightInformationControllerScenarioTests : IDisposable
         // first user tries to update the flight
         flight1.Status = FlightStatus.InAir;
         response = await client.PutAsync("/api/flights/" + flight1.FlightID, TestHelpers.ToJsonBody(flight1));
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+
+        // first user tries to delete the flight
+        response = await client.DeleteAsync($"/api/flights/{flight1.FlightID}?version={flight1.Version}");
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
 
         // database refelcts second user's change

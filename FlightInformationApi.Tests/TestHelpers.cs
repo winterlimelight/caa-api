@@ -8,7 +8,7 @@ namespace FlightInformationApi.Tests;
 public static class TestHelpers
 {
 
-    public async static Task<T> ReadBody<T>(ttpResponseMessage message)
+    public async static Task<T> ReadBody<T>(HttpResponseMessage message)
     {
         string rawBody = await message.Content.ReadAsStringAsync();
         if (string.IsNullOrEmpty(rawBody))

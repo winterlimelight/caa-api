@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace FlightInformationApi;
 
-
+/// <summary>Entry point for ASP.NET Core web application</summary>
 public partial class Program
 {
     public static void Main(string[] args)
@@ -56,7 +56,6 @@ public partial class Program
 
         app.UseAuthorization();
 
-
         app.MapControllers();
 
         app.Run();
@@ -69,9 +68,10 @@ public partial class Program
         builder.Services.AddDbContext<WriteContext>(opt => opt.UseSqlite(connStr));
     }
 
-    // dependency injection - ideally we'd use AutoFac or write something here to populate many of these automatically
+    // dependency injection - in a larger solution we'd use AutoFac or write an assembly searcher to populate some of these automatically
     private static void DependencyInjection(WebApplicationBuilder builder)
     {
+        builder.Services.AddScoped<ICommandHandler<DeleteFlightCommand, EmptyCommandResponse>, DeleteFlightCommandHandler>();
         builder.Services.AddScoped<ICommandHandler<SetFlightCommand, IdCommandResponse>, SetFlightCommandHandler>();
 
         builder.Services.AddScoped<IFlightQueries, FlightQueries>();
