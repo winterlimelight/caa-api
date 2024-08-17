@@ -106,6 +106,23 @@ public class FlightInformationControllerUpdateFlightTests : IDisposable
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
 
+    [Fact]
+    public async Task UpdateFlight_InvalidDates()
+    {
+        HttpClient client = CreateClientWithLogger();
+        Flight originalFlight = await CreateTestFlight();
+
+        SetFlightCommand request = UpdateRequestFromFlight(originalFlight);
+        request.DepartureTime = new DateTimeOffset(2001, 8, 25, 0, 52, 0, TimeSpan.Zero);
+        request.ArrivalTime = new DateTimeOffset(2001, 8, 24, 8, 0, 0, TimeSpan.Zero);
+
+        var response = await client.PutAsync("/api/flights/" + originalFlight.FlightID, TestHelpers.ToJsonBody(request));
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        string body = await response.Content.ReadAsStringAsync();
+        Assert.Contains("Arrival time must be after departure time.", body);
+    }
+
     private HttpClient CreateClientWithLogger()
     {
         return _factory.WithWebHostBuilder(builder =>

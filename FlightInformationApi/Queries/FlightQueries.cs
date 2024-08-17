@@ -8,13 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlightInformationApi.Queries;
 
+/// <summary>Queries related to Flight model</summary>
 public interface IFlightQueries
 {
     /// <summary>Get all flights</summary>
     Task<List<FlightResponse>> GetAllFlights();
     /// <summary>Get a specific flight by its database ID</summary>
     Task<FlightResponse> GetFlight(int flightID);
-    /// <summary>Search </summary>
+    /// <summary>Search for flights</summary>
     Task<List<FlightResponse>> SearchFlights(FlightSearchOptions options);
 }
 

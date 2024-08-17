@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FlightInformationApi.Data;
-using FlightInformationApi.Commands;
 using FlightInformationApi.Controllers;
 using Microsoft.Extensions.Logging;
 using Xunit;

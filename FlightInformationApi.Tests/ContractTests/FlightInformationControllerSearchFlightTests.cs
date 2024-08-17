@@ -108,8 +108,60 @@ public class FlightInformationControllerSearchFlightTests : IDisposable
         AssertFlightNumbers(flights, "ANZ991", "ANZ992", "QFA884", "QFA885", "SDA777");
     }
 
-    // todo muliple filters: esp both dates
-    // todo param validation esp dates.
+    [Fact]
+    public async Task FlightSearch_DateRange()
+    {
+        await LoadFlights();
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/api/flights/search?fromDate=2024-08-16Z&toDate=2024-08-17Z");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var flights = await TestHelpers.ReadBody<FlightResponse[]>(response);
+        Assert.Equal(4, flights.Length);
+        AssertFlightNumbers(flights, "ANZ992", "ANZ993", "QFA885", "SDA777");
+    }
+
+    [Fact]
+    public async Task FlightSearch_AirlineAndAirport()
+    {
+        await LoadFlights();
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/api/flights/search?airport=NZAA&airline=Qantas");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var flights = await TestHelpers.ReadBody<FlightResponse[]>(response);
+        Assert.Equal(2, flights.Length);
+        AssertFlightNumbers(flights, "QFA884", "QFA886");
+    }
+
+    [Fact]
+    public async Task FlightSearch_UnknownAirline()
+    {
+        await LoadFlights();
+        var client = _factory.CreateClient();
+
+        var response = await client.GetAsync("/api/flights/search?airline=Cathay Pacific");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var flights = await TestHelpers.ReadBody<FlightResponse[]>(response);
+        Assert.Empty(flights);
+    }
+
+    [Theory]
+    [InlineData("2024")]
+    [InlineData("2024-14-7")]
+    [InlineData("2024-08-16T25:00:00")]
+    [InlineData("abc")]
+    public async Task FlightSearch_InvalidDates(string strDate)
+    {
+        var client = _factory.CreateClient();
+        var response = await client.GetAsync($"/api/flights/search?fromDate={strDate}");
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        string body = await response.Content.ReadAsStringAsync();
+        Assert.Contains($"The value '{strDate}' is not valid.", body);
+    }
 
     private async Task LoadFlights()
     {

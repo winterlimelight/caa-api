@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Text.Json.Serialization;
 using FlightInformationApi.Commands;
@@ -21,8 +20,14 @@ public partial class Program
 
         // Add services to the container.
         IMvcBuilder mvcBuilder = builder.Services.AddControllers();
-        mvcBuilder.AddJsonOptions(opts => {
+        mvcBuilder.AddJsonOptions(opts =>
+        {
             opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+        mvcBuilder.ConfigureApiBehaviorOptions(opts =>
+        {
+            // hide problem details for error status codes in swagger UI
+            opts.SuppressMapClientErrors = true;
         });
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -82,7 +87,7 @@ public partial class Program
     private static void PopulateDatabase(WriteContext db)
     {
         var anyAirport = db.Airports.FirstOrDefault();
-        if(anyAirport != null)
+        if (anyAirport != null)
             return; // already populated
 
         db.Airports.Add(new Airport { AirportID = 1, Code = "NZAA", Name = "Auckland" });

@@ -13,7 +13,7 @@ The instructions assume that you
 The API itself has no UI so another tool like Postman is required to run against it.
 1. `cd FlightInformationApi`
 2. `dotnet run --launch-profile "api"`
-3. Access API endpoints e.g. https://localhost:5001/flights/14
+3. Access API endpoints e.g. https://localhost:5001/api/flights
 
 
 ### To launch swagger

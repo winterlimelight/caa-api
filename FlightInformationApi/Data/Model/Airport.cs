@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlightInformationApi.Data;
 
+/// <summary>Database model for an Airport</summary>
 public class Airport
 {
     public int AirportID {get;set;}

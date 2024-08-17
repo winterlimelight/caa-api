@@ -2,6 +2,7 @@ using System;
 
 namespace FlightInformationApi.Queries;
 
+/// <summary>Flight response returned to api caller</summary>
 public class FlightResponse
 {
     /// <summary>Database ID for the flight</summary>

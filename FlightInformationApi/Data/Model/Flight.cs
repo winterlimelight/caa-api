@@ -17,6 +17,7 @@ public enum FlightStatus
     Landed
 }
 
+/// <summary>Database model for a Flight</summary>
 public class Flight
 {
     public int FlightID { get; set; }

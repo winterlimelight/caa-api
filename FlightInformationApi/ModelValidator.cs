@@ -4,8 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FlightInformationApi;
 
+/// <summary>Validation of models that use .NET Validation Attributes</summary>
 public interface IModelValidator
 {
+    /// <summary>Validate model which uses .NET Validation Attributes</summary>
     bool Validate(object o);
 }
 

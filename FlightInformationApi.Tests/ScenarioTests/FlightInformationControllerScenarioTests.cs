@@ -10,7 +10,6 @@ using Xunit;
 using Moq;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
 using FlightInformationApi.Queries;
 
@@ -69,6 +68,12 @@ public class FlightInformationControllerScenarioTests : IDisposable
         var fetchedFlight = (await TestHelpers.ReadBody<FlightResponse[]>(response)).Single();
         Assert.Equal("ANZ179M", fetchedFlight.FlightNumber);
         Assert.Equal(FlightStatus.Landed, fetchedFlight.Status);
+
+        // search for flight
+        response = await client.GetAsync("/api/flights/search?airport=Palmerston");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        fetchedFlight = (await TestHelpers.ReadBody<FlightResponse[]>(response)).Single();
+        Assert.Equal("ANZ179M", fetchedFlight.FlightNumber);
 
         // delete the flight
         response = await client.DeleteAsync($"/api/flights/{fetchedFlight.FlightID}?version={fetchedFlight.Version}");

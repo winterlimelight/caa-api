@@ -10,11 +10,10 @@ using Microsoft.Extensions.Logging;
 
 using FlightInformationApi.Commands;
 using FlightInformationApi.Queries;
-using FlightInformationApi.Data;
-
 
 namespace FlightInformationApi.Controllers;
 
+/// <summary>Controller for FlightInformation endpoints</summary>
 [ApiController]
 [Route("api/flights")]
 public class FlightInformationController : ControllerBase
@@ -53,7 +52,7 @@ public class FlightInformationController : ControllerBase
     [Consumes(MediaTypeNames.Application.Json)]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IdCommandResponse>> CreateFlight([FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
+    public async Task<ActionResult> CreateFlight([FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
     {
         request.FlightID = 0; // new flight request
         _logger.LogTrace("CreateFlight() request=" + JsonSerializer.Serialize(request));
@@ -79,7 +78,7 @@ public class FlightInformationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<IdCommandResponse>> UpdateFlight(int flightID, [FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
+    public async Task<ActionResult> UpdateFlight(int flightID, [FromBody] SetFlightCommand request, [FromServices] ICommandHandler<SetFlightCommand, IdCommandResponse> handler)
     {
         if(flightID <= 0)
             return NotFound();
@@ -117,7 +116,7 @@ public class FlightInformationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<IdCommandResponse>> DeleteFlight(int flightID, [FromQuery] Guid version, [FromServices] ICommandHandler<DeleteFlightCommand, EmptyCommandResponse> handler)
+    public async Task<ActionResult> DeleteFlight(int flightID, [FromQuery] Guid version, [FromServices] ICommandHandler<DeleteFlightCommand, EmptyCommandResponse> handler)
     {
         var request = new DeleteFlightCommand { FlightID = flightID, Version = version };
         _logger.LogTrace("DeleteFlight() request=" + JsonSerializer.Serialize(request));

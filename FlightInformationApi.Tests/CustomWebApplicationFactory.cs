@@ -33,9 +33,6 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 return connection;
             });
 
-            //services.AddDbContext<WriteContext>((container, options) => options.UseSqlite(container.GetRequiredService<DbConnection>()));
-            //services.AddDbContext<ReadContext>((container, options) => options.UseSqlite(container.GetRequiredService<DbConnection>()));
-
             services.AddDbContext<WriteContext>((container, options) =>
             {
                 var connection = container.GetRequiredService<DbConnection>();

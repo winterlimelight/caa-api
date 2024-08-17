@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace FlightInformationApi.Tests;
 
+/// <summary>Helpers for common test operations</summary>
 public static class TestHelpers
 {
-
+    /// <summary>Read body of request into an object</summary>
     public async static Task<T> ReadBody<T>(HttpResponseMessage message)
     {
         string rawBody = await message.Content.ReadAsStringAsync();
@@ -20,6 +21,7 @@ public static class TestHelpers
         return JsonSerializer.Deserialize<T>(rawBody, opts);
     }
 
+    /// <summary>Convert object to HttpContent which can be POSTed</summary>
     public static HttpContent ToJsonBody(object obj)
     {
         string json = JsonSerializer.Serialize(obj);
